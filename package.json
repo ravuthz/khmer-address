@@ -2,10 +2,43 @@
   "name": "khmer-address",
   "module": "index.ts",
   "type": "module",
-  "devDependencies": {
-    "bun-types": "latest"
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": {
+    "name": "Ravuthz",
+    "email": "ravuthz@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ravuthz/khmer-address.git"
+  },
+  "keywords": [
+    "khmer",
+    "address"
+  ],
+  "description": "Khmer Address",
+  "scripts": {
+    "build": "bun build --target=node ./src/index.ts --outfile=dist/index.js && bun run build:declaration",
+    "build:declaration": "tsc --emitDeclarationOnly --project tsconfig.types.json",
+    "postbuild": "rimraf tsconfig.types.tsbuildinfo",
+    "dev": "bun run index.ts"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
-  }
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "bun-types": "latest",
+    "prettier": "^3.1.0",
+    "rimraf": "^5.0.5"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "files": [
+    "dist/*.js",
+    "dist/*.d.ts"
+  ]
 }
