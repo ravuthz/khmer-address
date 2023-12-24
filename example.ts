@@ -1,7 +1,7 @@
 import { getAddressByCode, getAddressByParent, syncAddressFromRemote } from "./src/index";
 
 async function main() {
-    const url = 'https://raw.githubusercontent.com/dwilkie/pumi/master/data';
+    const url = 'https://raw.githubusercontent.com/ravuthz/khmer-address-data/master/data';
 
     await syncAddressFromRemote(url, './data');
 

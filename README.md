@@ -21,7 +21,7 @@ import { getAddressByCode, getAddressByParent, syncAddressFromRemote } from "khm
 
 async function main() {
 
-    const url = 'https://raw.githubusercontent.com/dwilkie/pumi/master/data';
+    const url = 'https://raw.githubusercontent.com/ravuthz/khmer-address-data/master/data';
 
     // Load data from remote and save to local
     await syncAddressFromRemote(url, './data');
