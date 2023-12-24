@@ -10,7 +10,7 @@
     "email": "ravuthz@gmail.com"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "@ravuthz:registry": "https://npm.pkg.github.com"
   },
   "repository": {
     "type": "git",
