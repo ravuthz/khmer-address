@@ -1,4 +1,4 @@
-# khmer-address
+# Khmer Address package
 
 To install dependencies:
 
@@ -46,3 +46,7 @@ async function main() {
 
 main();
 ```
+
+Check more about data
+
+https://github.com/ravuthz/khmer-address-data
