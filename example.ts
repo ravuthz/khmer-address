@@ -1,7 +1,9 @@
-import { getAddressByCode, getAddressByParent, loadAddressFromRemoteYaml } from './src/functions';
+import { getAddressByCode, getAddressByParent, syncAddressFromRemote } from "./src/index";
 
 async function main() {
-    // loadAddressFromRemoteYaml();
+    const url = 'https://raw.githubusercontent.com/dwilkie/pumi/master/data';
+
+    await syncAddressFromRemote(url, './data');
 
     const p1 = await getAddressByCode('01'); //4
     console.log(p1);

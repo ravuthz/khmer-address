@@ -1,6 +1,5 @@
 {
   "name": "khmer-address",
-  "module": "index.ts",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,10 +19,8 @@
   ],
   "description": "Khmer Address",
   "scripts": {
-    "build": "bun build --target=node ./src/index.ts --outfile=dist/index.js && bun run build:declaration",
-    "build:declaration": "tsc --emitDeclarationOnly --project tsconfig.types.json",
-    "postbuild": "rimraf tsconfig.types.tsbuildinfo",
-    "dev": "bun run index.ts"
+    "build": "tsup",
+    "example": "bun run ./example.ts"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -32,7 +29,9 @@
     "@types/js-yaml": "^4.0.9",
     "bun-types": "latest",
     "prettier": "^3.1.0",
-    "rimraf": "^5.0.5"
+    "rimraf": "^5.0.5",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"

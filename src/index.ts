@@ -2,17 +2,14 @@ import fs from 'fs';
 import yaml from 'js-yaml';
 import { join } from 'path';
 
-let globalCache: any = {};
-
-const YAML_URL = 'https://raw.githubusercontent.com/dwilkie/pumi/master';
-const ROOT_DIR = join(import.meta.dir, '..');
-
 export type LatLong = { lat: string, long: string };
 export type GeoData = LatLong & {
     bounding_box: string[]
 };
 
-export const codeType: any = {
+let globalCache: any = {};
+
+export const CODE_TYPE: any = {
     2: 'provinces',
     4: 'districts',
     6: 'communes',
@@ -20,7 +17,7 @@ export const codeType: any = {
 };
 
 export function writeJsonData(filePath: string, fileName: string, data: any) {
-    const fullPath = join(ROOT_DIR, filePath, fileName);
+    const fullPath = join(filePath, fileName);
     if (!fs.existsSync(filePath)) {
         fs.mkdirSync(filePath, { recursive: true });
     }
@@ -29,8 +26,22 @@ export function writeJsonData(filePath: string, fileName: string, data: any) {
         fs.writeFile(fullPath, text.replace(/\s\n/g, ''), 'utf8', (err) => {
             if (err) {
                 reject(err);
+            } else {
+                resolve(true);
             }
-            resolve(true);
+        });
+    });
+}
+
+export function readJsonData(filePath: string, fileName: string) {
+    const fullPath = join(filePath, fileName);
+    return new Promise((resolve, reject) => {
+        fs.readFile(fullPath, 'utf8', (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(JSON.parse(data));
+            }
         });
     });
 }
@@ -64,34 +75,40 @@ export function formatAddress(data: any) {
     });
 }
 
-export async function saveAddressJson(name: string, path = 'data') {
-    const result: any = await fetch(`${YAML_URL}/${path}/${name}.yml`).then(res => res.text()).then(yaml.load);
+export async function saveAddressFromRemote(url: string, name: string, path: string) {
+    const localPath = join(path, `${name}.json`);
+    if (fs.existsSync(localPath)) {
+        console.log(`The local ${localPath} already exists.`);
+        return;
+    }
+    const result: any = await fetch(url).then(res => res.text()).then(yaml.load);
     const jsonData = formatAddress(result[name]);
     return writeJsonData(path, `${name}.json`, jsonData);
 }
 
-export async function loadAddressFromRemoteYaml(path = 'data') {
-    await saveAddressJson('provinces', path);
-    await saveAddressJson('districts', path);
-    await saveAddressJson('communes', path);
-    await saveAddressJson('villages', path);
+export async function syncAddressFromRemote(url: string, localPath = './data') {
+    const addressKeys: string[] = Object.values(CODE_TYPE);
+    console.log(`Syncing address data from remote ... ${url}`);
+    return await Promise.allSettled(addressKeys.map((key) => {
+        return saveAddressFromRemote(`${url}/${key}.yml`, key, localPath);
+    }));
 }
 
-export async function getAllAddress(type: string) {
+export async function getAllAddress(type: string, localPath: string) {
     if (!globalCache[type]) {
-        globalCache[type] = await import(`${ROOT_DIR}/data/${type}.json`).then(res => res.default);
+        globalCache[type] = await readJsonData(localPath, `${type}.json`);
     }
     return globalCache[type] || [];
 }
 
-export async function getAddressByCode(code: string) {
-    const data = await getAllAddress(codeType[code.length]);
+export async function getAddressByCode(code: string, localPath = './data') {
+    const data = await getAllAddress(CODE_TYPE[code.length], localPath);
     return data.find((item: any) => item.cd === code);
 }
 
-export async function getAddressByParent(parent: string) {
+export async function getAddressByParent(parent: string, localPath = './data') {
     const len = parent.length + 2 > 8 ? 8 : parent.length + 2;
     // const len = Math.min(parent.length + 2, 8);
-    const data = await getAllAddress(codeType[len]);
+    const data = await getAllAddress(CODE_TYPE[len], localPath);
     return data.filter((item: any) => item.cd.startsWith(parent));
 }
